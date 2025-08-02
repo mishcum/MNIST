@@ -8,9 +8,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class Trainer():
-    def __init__(self, model : nn.Module, epochs : int, loss_func : nn.Module, 
+    def __init__(self, model : nn.Module, model_name : str, epochs : int, loss_func : nn.Module, 
           optimizer : nn.Module, train_set : data.DataLoader, val_set : data.DataLoader = None):
         self.model = model
+        self.model_name = model_name
         self.epochs = epochs
         self.loss_func = loss_func
         self.optimizer = optimizer
@@ -61,11 +62,11 @@ class Trainer():
                 self.val_losses.append(Q_val)
             
             self.train_losses.append(loss_mean)
-            print(f' | loss_mean={loss_mean:.3f}', end='')
+            print(f'Epoch [{e + 1}/{self.epochs}] | loss_mean={loss_mean:.3f}', end='')
             print(f', Q_val={Q_val:.3f}' if self.val_set else '')
 
             st = self.model.state_dict()
-            torch.save(st, f'src/CNN/models/CNN_{e + 1}.tar')
+            torch.save(st, f'models/{self.model_name.replace(' ', '_')}_{e + 1}.tar')
         
         return self.model
     

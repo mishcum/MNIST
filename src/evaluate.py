@@ -10,18 +10,18 @@ from MNISTDataset import MNISTDataset
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 class Evaluation():
-    def __init__(self, model : nn.Module):
+    def __init__(self, model : nn.Module, test_dataset):
         self.model = model
 
-        test_dataset = MNISTDataset(path='data', train=False, transforms=v2.Compose([v2.ToImage(), v2.Grayscale(), v2.ToDtype(dtype=torch.float32), v2.Normalize((0.1307,), (0.3081,))]))
         dl_test = data.DataLoader(dataset=test_dataset, batch_size=len(test_dataset))
         X_test, y_test = next(iter(dl_test))
         X_test = X_test.to(device)
 
-        self.labels = list(test_dataset.format.keys())
-        self.y_test = torch.argmax(y_test, dim=1).cpu().detach().numpy()
-        self.predicts_proba = torch.softmax(self.model(X_test), dim=1).cpu().detach().numpy()
-        self.predicts = np.argmax(self.predicts_proba, axis=1)
+        with torch.no_grad():
+            self.labels = list(test_dataset.format.keys())
+            self.y_test = torch.argmax(y_test, dim=1).cpu().detach().numpy()
+            self.predicts_proba = torch.softmax(self.model(X_test), dim=1).cpu().detach().numpy()
+            self.predicts = np.argmax(self.predicts_proba, axis=1)
 
     def accuracy(self):
         acc = accuracy_score(self.y_test, self.predicts)

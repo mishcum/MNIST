@@ -1,6 +1,6 @@
 import torch
 from torch.utils import data
-from CNN.model import ModelCNN
+from model import ModelCNN
 from MNISTDataset import MNISTDataset
 import torchvision.transforms.v2 as v2
 
@@ -22,9 +22,9 @@ if __name__ == '__main__':
     model = trainer.train()
     trainer.train_plot('CNN model training', save=True)
 
-    evaluation = Evaluation(model)
+    test_dataset = MNISTDataset(path='data', train=False, transforms=v2.Compose([v2.ToImage(), v2.Grayscale(), v2.ToDtype(dtype=torch.float32), v2.Normalize((0.1307,), (0.3081,))]))
+
+    evaluation = Evaluation(model, test_dataset)
     evaluation.accuracy()
     evaluation.precision_recall()
     evaluation.f1()
-
-
